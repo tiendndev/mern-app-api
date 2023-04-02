@@ -1,4 +1,4 @@
-import { mapOrder } from "./utilities/sorts.js";
+import { mapOrder } from "~/utilities/sorts.js";
 
 import express from "express";
 const app = express();
