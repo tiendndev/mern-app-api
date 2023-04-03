@@ -10,7 +10,7 @@ const createNew = async (req, res, next) => {
       next();
    } catch (error) {
       res.status(HttpStatusCode.BAD_REQUEST).json({
-         errors: new Error(error),
+         errors: new Error(error).message,
       });
    }
 };
