@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { ObjectId } from "mongodb";
 import { getDB } from "~/config/mongodb";
 
 /* Define Card collection */
@@ -6,8 +7,8 @@ const cardCollectionName = "cards";
 const cardCollectionSchema = Joi.object({
    boardId: Joi.string().required(),
    columnId: Joi.string().required(),
-   title: Joi.string().required().min(3).max(20),
-   cover: Join.string().default(null),
+   title: Joi.string().required().min(3).max(30).trim(),
+   cover: Joi.string().default(null),
    createdAt: Joi.date().timestamp().default(Date.now()),
    updatedAt: Joi.date().timestamp().default(null),
    _destroy: Joi.boolean().default(false),
@@ -19,6 +20,17 @@ const validateSchema = async (data) => {
    });
 };
 
+const findOneById = async (id) => {
+   try {
+      const result = await getDB()
+         .collection(cardCollectionName)
+         .findOne({ _id: ObjectId(id) });
+      return result;
+   } catch (error) {
+      throw new Error(error);
+   }
+};
+
 const createNew = async (data) => {
    try {
       const value = await validateSchema(data);
@@ -27,8 +39,8 @@ const createNew = async (data) => {
          .insertOne(value);
       return result.ops[0];
    } catch (error) {
-      console.log(error);
+      throw new Error(error);
    }
 };
 
-export const CardModel = { createNew };
+export const CardModel = { createNew, findOneById };

@@ -1,17 +1,15 @@
 import { HttpStatusCode } from "~/utilities/constants";
-import { BoardService } from "~/services/board.service";
+import { CardService } from "~/services/card.service";
 
 const createNew = async (req, res) => {
-   console.log(req.body);
    try {
-      const result = await BoardService.createNew(req.body);
+      const result = await CardService.createNew(req.body);
       res.status(HttpStatusCode.OK).json(result);
    } catch (error) {
-      console.log(error);
       res.status(HttpStatusCode.INTERNAL_SERVER).json({
          errors: error.message,
       });
    }
 };
 
-export const BoardController = { createNew };
+export const CardController = { createNew };
