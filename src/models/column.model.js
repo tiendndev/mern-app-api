@@ -20,15 +20,49 @@ const validateSchema = async (data) => {
    });
 };
 
-const createNew = async (data) => {
+const findOneById = async (id) => {
    try {
-      const value = await validateSchema(data);
       const result = await getDB()
          .collection(columnCollectionName)
-         .insertOne(value);
+         .findOne({ _id: new ObjectId(id) });
       return result;
    } catch (error) {
-      console.log(error);
+      throw new Error(error);
+   }
+};
+
+const createNew = async (data) => {
+   try {
+      const validatedValue = await validateSchema(data);
+      const insertValue = {
+         ...validatedValue,
+         boardId: new ObjectId(validatedValue.boardId),
+      };
+      const result = await getDB()
+         .collection(columnCollectionName)
+         .insertOne(insertValue);
+      return result;
+   } catch (error) {
+      throw new Error(error);
+   }
+};
+
+/**
+ * @param {string} columnId
+ * @param {string} cardId
+ */
+const pushCardOrder = async (columnId, cardId) => {
+   try {
+      const result = await getDB()
+         .collection(columnCollectionName)
+         .findOneAndUpdate(
+            { _id: new ObjectId(columnId) },
+            { $push: { cardOrder: cardId } },
+            { returnDocument: "after" }
+         );
+      return result.value;
+   } catch (error) {
+      throw new Error(error);
    }
 };
 
@@ -36,16 +70,21 @@ const update = async (id, data) => {
    try {
       const result = await getDB()
          .collection(columnCollectionName)
-         .findOneAndUpdate( 
+         .findOneAndUpdate(
             { _id: new ObjectId(id) },
             { $set: data },
-            { returnOriginal: false }
+            { returnDocument: "after" }
          );
-      console.log(result.value);
       return result.value;
    } catch (error) {
       throw new Error(error);
    }
 };
 
-export const ColumnModel = { createNew, update };
+export const ColumnModel = {
+   columnCollectionName,
+   createNew,
+   pushCardOrder,
+   update,
+   findOneById,
+};

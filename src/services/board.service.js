@@ -6,10 +6,34 @@ const createNew = async (data) => {
       const getNewBoard = await BoardModel.findOneById(
          createdBoard.insertedId.toString()
       );
+
       return getNewBoard;
    } catch (error) {
       throw new Error(error);
    }
 };
 
-export const BoardService = { createNew };
+const getFullBoard = async (boardId) => {
+   try {
+      const board = await BoardModel.getFullBoard(boardId);
+
+      /* Add card to each column */
+      board.columns.forEach((column) => {
+         column.cards = board.cards.filter(
+            (card) => card.columnId.toString() === column._id.toString()
+         );
+      });
+
+      /* Sort Columns by columnOrder, sort Cards by cardOrder, this step will
+      pass to frontend DEV */
+
+      /* Remove Cards data from boards */
+      delete board.cards;
+
+      return board;
+   } catch (error) {
+      throw new Error(error);
+   }
+};
+
+export const BoardService = { createNew, getFullBoard };

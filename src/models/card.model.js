@@ -24,7 +24,7 @@ const findOneById = async (id) => {
    try {
       const result = await getDB()
          .collection(cardCollectionName)
-         .findOne({ _id: ObjectId(id) });
+         .findOne({ _id: new ObjectId(id) });
       return result;
    } catch (error) {
       throw new Error(error);
@@ -33,14 +33,19 @@ const findOneById = async (id) => {
 
 const createNew = async (data) => {
    try {
-      const value = await validateSchema(data);
+      const validatedValue = await validateSchema(data);
+      const insertValue = {
+         ...validatedValue,
+         boardId: new ObjectId(validatedValue.boardId),
+         columnId: new ObjectId(validatedValue.columnId),
+      };
       const result = await getDB()
          .collection(cardCollectionName)
-         .insertOne(value);
-      return result.ops[0];
+         .insertOne(insertValue);
+      return result;
    } catch (error) {
       throw new Error(error);
    }
 };
 
-export const CardModel = { createNew, findOneById };
+export const CardModel = { cardCollectionName, createNew, findOneById };
