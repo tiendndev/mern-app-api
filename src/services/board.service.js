@@ -1,7 +1,9 @@
 import { BoardModel } from "~/models/board.model.";
+import { cloneDeep } from "lodash";
 
 const createNew = async (data) => {
    try {
+      /* transaction mongodb */
       const createdBoard = await BoardModel.createNew(data);
       const getNewBoard = await BoardModel.findOneById(
          createdBoard.insertedId.toString()
@@ -21,9 +23,16 @@ const getFullBoard = async (boardId) => {
          throw new Error("Board not found!");
       }
 
+      const transformBoard = cloneDeep(board);
+
+      /* Filter deleted Columns */
+      transformBoard.columns = transformBoard.columns.filter(
+         (column) => !column._destroy
+      );
+
       /* Add card to each column */
-      board.columns.forEach((column) => {
-         column.cards = board.cards.filter(
+      transformBoard.columns.forEach((column) => {
+         column.cards = transformBoard.cards.filter(
             (card) => card.columnId.toString() === column._id.toString()
          );
       });
@@ -32,9 +41,9 @@ const getFullBoard = async (boardId) => {
       pass to frontend DEV */
 
       /* Remove Cards data from boards */
-      delete board.cards;
+      delete transformBoard.cards;
 
-      return board;
+      return transformBoard;
    } catch (error) {
       throw new Error(error);
    }

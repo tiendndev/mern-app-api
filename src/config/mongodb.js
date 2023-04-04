@@ -22,8 +22,3 @@ export const getDB = () => {
    if (!dbInstance) throw new Error("Must connect to Database first!");
    return dbInstance;
 };
-
-// const listDatabases = async (client) => {
-//    const dataBaseList = await client.db().admin().listDatabases();
-//    console.log(dataBaseList.databases);
-// };

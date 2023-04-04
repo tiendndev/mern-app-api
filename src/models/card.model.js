@@ -48,4 +48,32 @@ const createNew = async (data) => {
    }
 };
 
-export const CardModel = { cardCollectionName, createNew, findOneById };
+/**
+ * @param {Array of string card id} ids
+ */
+const deleteMany = async (ids) => {
+   try {
+      /* Transform ids array into objectId array */
+      const transformIds = ids.map((i) => {
+         let result = new ObjectId(i);
+         return result;
+      });
+      const result = await getDB()
+         .collection(cardCollectionName)
+         .updateMany(
+            /* Updates only id in array transformIds with $in */
+            { _id: { $in: transformIds } },
+            { $set: { _destroy: true } }
+         );
+      return result;
+   } catch (error) {
+      throw new Error(error);
+   }
+};
+
+export const CardModel = {
+   cardCollectionName,
+   createNew,
+   deleteMany,
+   findOneById,
+};
