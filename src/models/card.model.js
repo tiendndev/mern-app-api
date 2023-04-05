@@ -7,7 +7,7 @@ const cardCollectionName = "cards";
 const cardCollectionSchema = Joi.object({
    boardId: Joi.string().required(),
    columnId: Joi.string().required(),
-   title: Joi.string().required().min(3).max(30).trim(),
+   title: Joi.string().required().min(3).max(100).trim(),
    cover: Joi.string().default(null),
    createdAt: Joi.date().timestamp().default(Date.now()),
    updatedAt: Joi.date().timestamp().default(null),
@@ -48,6 +48,25 @@ const createNew = async (data) => {
    }
 };
 
+const update = async (id, data) => {
+   try {
+      const updateData = { ...data };
+      if (data.boardId) updateData.boardId = new ObjectId(data.boardId);
+      if (data.columnId) updateData.columnId = new ObjectId(data.columnId);
+
+      const result = await getDB()
+         .collection(cardCollectionName)
+         .findOneAndUpdate(
+            { _id: new ObjectId(id) },
+            { $set: updateData },
+            { returnDocument: "after" }
+         );
+      return result.value;
+   } catch (error) {
+      throw new Error(error);
+   }
+};
+
 /**
  * @param {Array of string card id} ids
  */
@@ -75,5 +94,6 @@ export const CardModel = {
    cardCollectionName,
    createNew,
    deleteMany,
+   update,
    findOneById,
 };
