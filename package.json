@@ -2,15 +2,15 @@
    "name": "mern-app-api",
    "version": "1.0.0",
    "description": "APIs for mern-app",
-   "main": "src/server.js",
+   "main": "src/index.js",
    "scripts": {
       "test": "echo \"Error: no test specified\" && exit 1",
       "clean": "rm -rf build && mkdir build",
       "build-babel": "babel ./src -d ./build/src",
       "build": "npm run clean && npm run build-babel",
-      "production": "npm run build && node ./build/src/server.js",
-      "dev": "nodemon --exec ./node_modules/.bin/babel-node ./src/server.js",
-      "start": "node ./build/src/server.js"
+      "production": "npm run build && node ./build/src/index.js",
+      "dev": "nodemon --exec ./node_modules/.bin/babel-node ./src/index.js",
+      "start": "node ./build/src/index.js"
    },
    "keywords": [ ],
    "author": "",
